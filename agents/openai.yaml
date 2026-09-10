@@ -1,0 +1,8 @@
+interface:
+  display_name: "Seenical Console"
+  short_description: "Manage Seenical content workflows through conversation"
+  brand_color: "#5D51CD"
+  default_prompt: "Use $seenical-console to inspect my current content plan and apply the changes I request."
+
+policy:
+  allow_implicit_invocation: true

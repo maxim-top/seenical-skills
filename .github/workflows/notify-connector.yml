@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - ".seenical/**"
+      - "SKILL.md"
+      - "agents/**"
+      - "references/**"
   workflow_dispatch:
 
 permissions:
