@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "skills": [
+    {
+      "skill_id": "example-content-plan",
+      "name": "Content plan assistant",
+      "description": "Helps users inspect, create, and update Seenical content plans through conversation.",
+      "path": ".seenical/skills/example-content-plan",
+      "tools": [
+        { "id": "seenical.plan.list", "min_version": 1 },
+        { "id": "seenical.plan.get", "min_version": 1 },
+        { "id": "seenical.plan.create", "min_version": 1 },
+        { "id": "seenical.plan.update", "min_version": 1 }
+      ],
+      "scopes": ["plans:read", "plans:write"]
+    }
+  ]
+}

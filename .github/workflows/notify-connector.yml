@@ -1,0 +1,42 @@
+name: Notify Seenical Connector
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".seenical/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seenical-public-skill-notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      # Replace this value before publishing the repository.
+      CONNECTOR_NOTIFY_URL: https://connector.example.com/service/agent_tools/public_catalog/notify
+    steps:
+      - name: Notify Connector to pull the configured repository
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REF: ${{ github.ref }}
+          COMMIT_SHA: ${{ github.sha }}
+          EVENT_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          payload=$(jq -n \
+            --arg repository "$REPOSITORY" \
+            --arg ref "$REF" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg event_id "$EVENT_ID" \
+            '{schema_version:1,repository:$repository,ref:$ref,commit_sha:$commit_sha,event_id:$event_id}')
+          curl --fail-with-body --show-error --silent \
+            --retry 2 --retry-delay 3 --retry-all-errors \
+            -H "Content-Type: application/json" \
+            --data "$payload" \
+            "$CONNECTOR_NOTIFY_URL"
