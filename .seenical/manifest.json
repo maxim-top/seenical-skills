@@ -4,36 +4,28 @@
     {
       "skill_id": "seenical-console",
       "name": "Seenical Console",
-      "description": "Manage Seenical Agents, content plans, sites, previews, and deployments through conversation.",
+      "description": "Manage Seenical Agents, content plans, sites, previews, and publishing through conversation.",
       "path": ".",
       "tools": [
         { "id": "seenical.plan.list", "min_version": 1 },
-        { "id": "seenical.plan.get", "min_version": 1 },
         { "id": "seenical.plan.create", "min_version": 1 },
         { "id": "seenical.plan.update", "min_version": 1 },
         { "id": "seenical.plan.schedule", "min_version": 1 },
         { "id": "seenical.plan.run", "min_version": 1 },
-        { "id": "seenical.plan.archive", "min_version": 1 },
-        { "id": "seenical.plan.rollback", "min_version": 1 },
         { "id": "seenical.plan_run.list", "min_version": 1 },
         { "id": "seenical.preview.create", "min_version": 1 },
-        { "id": "seenical.preview.get", "min_version": 1 },
         { "id": "seenical.preview.publish", "min_version": 1 },
         { "id": "seenical.preview.discard", "min_version": 1 },
-        { "id": "seenical.deploy.rollback", "min_version": 1 },
-        { "id": "seenical.agent.get", "min_version": 1 },
-        { "id": "seenical.agent.update", "min_version": 1 },
-        { "id": "seenical.agent.rollback", "min_version": 1 },
         { "id": "seenical.site.list", "min_version": 1 },
-        { "id": "seenical.site.get", "min_version": 1 },
         { "id": "seenical.site.update", "min_version": 1 },
-        { "id": "seenical.site.rollback", "min_version": 1 },
-        { "id": "seenical.console.navigate", "min_version": 1 }
+        { "id": "seenical.agent.list", "min_version": 1 },
+        { "id": "seenical.agent.update", "min_version": 1 },
+        { "id": "seenical.plugin.list", "min_version": 1 }
       ],
       "scopes": [
         "agents:read", "agents:write", "plans:read", "plans:write",
         "generation:execute", "sites:read", "sites:write",
-        "publishing:execute", "console:navigate"
+        "publishing:execute", "plugins:read"
       ]
     }
   ]

@@ -1,6 +1,6 @@
 ---
 name: seenical-console
-description: Manage Seenical Agents, content generation plans, sites, previews, and deployments when a user asks to inspect or change Seenical Console through conversation.
+description: Manage Seenical Agents, content generation plans, sites, previews, and publishing when a user asks to inspect or change Seenical Console through conversation.
 ---
 
 # Seenical Console
@@ -11,7 +11,7 @@ constructing arguments.
 
 ## Workflow
 
-1. Use a read tool to resolve the target and its current revision.
+1. Use a read tool to resolve the intended target before changing it.
 2. For a change, send only fields the user requested and preserve omitted
    values.
 3. Show the runtime-provided preview or field-level difference before asking
@@ -20,15 +20,15 @@ constructing arguments.
    user explicitly requests it.
 5. Never resume a paused plan merely because its prompt, language, or other
    configuration changed.
-6. Treat generation, preview creation, publication, archival, and rollback as
+6. Treat generation, preview creation, publication, and preview discard as
    separate operations with their declared confirmation level.
-7. On a revision conflict, read the latest state and propose a new change;
-   never silently overwrite it.
+7. If current state changed before execution, read it again and propose a new
+   change; never silently overwrite it.
 
 ## Authorization boundaries
 
-The runtime supplies authentication and enforces App, user, Agent, Skill, and
-client capability authorization. Do not request, display, persist, or pass
+The runtime supplies authentication and enforces App, IM user, Agent,
+conversation, original-message, and client capability authorization. Do not request, display, persist, or pass
 access tokens, Git credentials, model keys, passwords, or billing credentials
 as tool arguments.
 

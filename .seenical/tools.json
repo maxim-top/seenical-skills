@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "tools": [
+    {
+      "tool_id": "seenical.plan.list",
+      "version": 1,
+      "function_name": "seenical_plan_list",
+      "title": "查看生成计划",
+      "description": "List the current App's content generation plans.",
+      "risk": "read",
+      "parameters": { "type": "object", "properties": {}, "additionalProperties": false },
+      "request": { "method": "GET", "path": "/app/grow_ai/get_task_list", "arguments": "query" },
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.plan.create",
+      "version": 1,
+      "function_name": "seenical_plan_create",
+      "title": "创建生成计划",
+      "description": "Create a content generation plan without running it.",
+      "risk": "write",
+      "parameters": { "$ref": "#/definitions/plan" },
+      "request": { "method": "POST", "path": "/app/grow_ai/create_task", "arguments": "body" },
+      "result_fields": ["task_id", "id", "revision"]
+    },
+    {
+      "tool_id": "seenical.plan.update",
+      "version": 1,
+      "function_name": "seenical_plan_update",
+      "title": "修改生成计划",
+      "description": "Partially update only the supplied fields of a plan.",
+      "risk": "write",
+      "parameters": { "$ref": "#/definitions/plan_update" },
+      "request": { "method": "POST", "path": "/app/grow_ai/configure_task", "arguments": "body" },
+      "result_fields": ["task_id", "id", "revision"]
+    },
+    {
+      "tool_id": "seenical.plan.schedule",
+      "version": 1,
+      "function_name": "seenical_plan_schedule",
+      "title": "暂停或恢复生成计划",
+      "description": "Change a plan's schedule without changing other fields.",
+      "risk": "write",
+      "parameters": {
+        "type": "object",
+        "properties": { "task_id": { "type": "string" }, "schedule": { "type": "string", "enum": ["on", "off"] } },
+        "required": ["task_id", "schedule"],
+        "additionalProperties": false
+      },
+      "request": { "method": "POST", "path": "/app/grow_ai/set_task_schedule", "arguments": "body" },
+      "result_fields": ["task_id", "schedule", "revision"]
+    },
+    {
+      "tool_id": "seenical.plan.run",
+      "version": 1,
+      "function_name": "seenical_plan_run",
+      "title": "立即运行生成计划",
+      "description": "Start one generation run for a plan.",
+      "risk": "execute",
+      "parameters": {
+        "type": "object",
+        "properties": { "task_id": { "type": "string" } },
+        "required": ["task_id"],
+        "additionalProperties": false
+      },
+      "request": { "method": "POST", "path": "/app/grow_ai/run_task", "arguments": "body" },
+      "result_fields": ["task_run_id", "task_id", "status"]
+    },
+    {
+      "tool_id": "seenical.plan_run.list",
+      "version": 1,
+      "function_name": "seenical_plan_run_list",
+      "title": "查看计划生成记录",
+      "description": "List generation runs for a plan.",
+      "risk": "read",
+      "parameters": {
+        "type": "object",
+        "properties": { "task_id": { "type": "string" } },
+        "required": ["task_id"],
+        "additionalProperties": false
+      },
+      "request": { "method": "GET", "path": "/app/grow_ai/get_task_run_list", "arguments": "query" },
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.preview.create",
+      "version": 1,
+      "function_name": "seenical_preview_create",
+      "title": "创建内容预览",
+      "description": "Create a preview from a generation run.",
+      "risk": "execute",
+      "parameters": {
+        "type": "object",
+        "properties": { "task_run_id": { "type": "string" } },
+        "required": ["task_run_id"],
+        "additionalProperties": false
+      },
+      "request": { "method": "POST", "path": "/app/grow_ai/task_run_preview", "arguments": "body" },
+      "result_fields": ["preview_id", "task_run_id", "status", "url"]
+    },
+    {
+      "tool_id": "seenical.preview.publish",
+      "version": 1,
+      "function_name": "seenical_preview_publish",
+      "title": "发布内容预览",
+      "description": "Publish an existing content preview.",
+      "risk": "destructive",
+      "parameters": {
+        "type": "object",
+        "properties": { "preview_id": { "type": "string" } },
+        "required": ["preview_id"],
+        "additionalProperties": false
+      },
+      "request": { "method": "POST", "path": "/app/grow_ai/preview_publish", "arguments": "body" },
+      "result_fields": ["preview_id", "status", "deployment_id"]
+    },
+    {
+      "tool_id": "seenical.preview.discard",
+      "version": 1,
+      "function_name": "seenical_preview_discard",
+      "title": "丢弃内容预览",
+      "description": "Discard an existing content preview.",
+      "risk": "destructive",
+      "parameters": {
+        "type": "object",
+        "properties": { "preview_id": { "type": "string" } },
+        "required": ["preview_id"],
+        "additionalProperties": false
+      },
+      "request": { "method": "POST", "path": "/app/grow_ai/preview_discard", "arguments": "body" },
+      "result_fields": ["preview_id", "status"]
+    },
+    {
+      "tool_id": "seenical.site.list",
+      "version": 1,
+      "function_name": "seenical_site_list",
+      "title": "查看网站列表",
+      "description": "List sites in the current App.",
+      "risk": "read",
+      "parameters": { "type": "object", "properties": {}, "additionalProperties": false },
+      "request": { "method": "GET", "path": "/app/grow_ai/get_site_list", "arguments": "query" },
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.site.update",
+      "version": 1,
+      "function_name": "seenical_site_update",
+      "title": "修改网站配置",
+      "description": "Partially update non-sensitive site configuration.",
+      "risk": "write",
+      "parameters": { "$ref": "#/definitions/site_update" },
+      "request": { "method": "POST", "path": "/app/grow_ai/configure_site", "arguments": "body" },
+      "result_fields": ["site_id", "id", "revision"]
+    },
+    {
+      "tool_id": "seenical.agent.list",
+      "version": 1,
+      "function_name": "seenical_agent_list",
+      "title": "查看 Agent 列表",
+      "description": "List Agents in the current App.",
+      "risk": "read",
+      "parameters": { "type": "object", "properties": {}, "additionalProperties": false },
+      "request": { "method": "GET", "path": "/app/list_chatbots", "arguments": "query" },
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.agent.update",
+      "version": 1,
+      "function_name": "seenical_agent_update",
+      "title": "修改 Agent 配置",
+      "description": "Update an existing Agent using the current Butler API.",
+      "risk": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "chatbot_id": { "type": "string" },
+          "expected_revision": { "type": "integer" },
+          "system_prompt": { "type": "string" },
+          "vendor": { "type": "string" },
+          "model": { "type": "string" }
+        },
+        "required": ["chatbot_id", "expected_revision"],
+        "additionalProperties": false
+      },
+      "request": { "method": "POST", "path": "/app/configure_chatbot", "arguments": "body" },
+      "result_fields": ["chatbot_id", "id", "revision"]
+    },
+    {
+      "tool_id": "seenical.plugin.list",
+      "version": 1,
+      "function_name": "seenical_plugin_list",
+      "title": "查看 AI 插件",
+      "description": "List AI plugins available to the current App.",
+      "risk": "read",
+      "parameters": { "type": "object", "properties": {}, "additionalProperties": false },
+      "request": { "method": "GET", "path": "/app/list_ai_plugins", "arguments": "query" },
+      "result_fields": ["list", "total"]
+    }
+  ],
+  "definitions": {
+    "plan": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }, "note": { "type": "string" }, "chatbot_id": { "type": "string" }, "prompt": { "type": "string" },
+        "run_immediately": { "type": "boolean", "enum": [false] },
+        "article_prompt": { "type": "string" }, "article_language": { "type": "string", "enum": ["auto", "zh-hans", "en"] },
+        "keywords": { "type": "string" }, "word_count_min": { "type": "integer" }, "word_count_max": { "type": "integer" },
+        "image_count": { "type": "integer" }, "article_count": { "type": "integer" },
+        "cycle_type": { "type": "string", "enum": ["none", "cycle"] }, "cycle_interval": { "type": "integer" },
+        "title_reuse": { "type": "string", "enum": ["on", "off"] }, "site_id_list": { "type": "array", "items": { "type": "string" } },
+        "target_dir": { "type": "string" }, "commit_type": { "type": "string", "enum": ["branch", "pull_request"] },
+        "target_summary_dir": { "type": "string" }, "auto_deploy": { "type": "string", "enum": ["on", "off"] }
+      },
+      "required": ["name", "note", "chatbot_id", "prompt", "keywords", "word_count_min", "word_count_max", "image_count", "article_count", "cycle_type", "cycle_interval", "run_immediately"],
+      "additionalProperties": false
+    },
+    "plan_update": {
+      "type": "object",
+      "properties": {
+        "task_id": { "type": "string" }, "expected_revision": { "type": "integer" }, "name": { "type": "string" }, "note": { "type": "string" }, "prompt": { "type": "string" },
+        "article_prompt": { "type": "string" }, "article_language": { "type": "string", "enum": ["auto", "zh-hans", "en"] },
+        "keywords": { "type": "string" }, "word_count_min": { "type": "integer" }, "word_count_max": { "type": "integer" },
+        "image_count": { "type": "integer" }, "article_count": { "type": "integer" },
+        "cycle_type": { "type": "string", "enum": ["none", "cycle"] }, "cycle_interval": { "type": "integer" },
+        "title_reuse": { "type": "string", "enum": ["on", "off"] }, "site_id_list": { "type": "array", "items": { "type": "string" } },
+        "target_dir": { "type": "string" }, "commit_type": { "type": "string", "enum": ["branch", "pull_request"] },
+        "target_summary_dir": { "type": "string" }, "auto_deploy": { "type": "string", "enum": ["on", "off"] }
+      },
+      "required": ["task_id", "expected_revision"],
+      "additionalProperties": false
+    },
+    "site_update": {
+      "type": "object",
+      "properties": {
+        "site_id": { "type": "string" }, "expected_revision": { "type": "integer" }, "name": { "type": "string" }, "footer_note": { "type": "string" },
+        "lanying_link": { "type": "string" }, "title": { "type": "string" }, "copyright": { "type": "string" },
+        "canonical_link": { "type": "string" }, "meta_keywords": { "type": "string" }, "official_website_url": { "type": "string" },
+        "max_latest_num": { "type": "integer" }, "language": { "type": "string", "enum": ["zh-hans", "en"] },
+        "commit_type": { "type": "string", "enum": ["branch", "pull_request"] }, "icp_number": { "type": "string" },
+        "hook_sentence_slogan": { "type": "string" }, "hook_sentence_image": { "type": "string" }, "collaborator": { "type": "string" }
+      },
+      "required": ["site_id", "expected_revision"],
+      "additionalProperties": false
+    }
+  }
+}
