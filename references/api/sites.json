@@ -77,15 +77,15 @@
       "description": "Read custom-domain configuration and verification state for one site.", "risk": "read",
       "parameters": {"type": "object", "properties": {"site_id": {"type": "string", "description": "Existing site ID."}}, "required": ["site_id"], "additionalProperties": false},
       "request": {"method": "GET", "path": "/app/grow_ai/get_site_custom_domain_info", "arguments": "query"},
-      "result_fields": ["domain", "status", "cname", "site_id"]
+      "result_fields": ["site_id", "domain_id", "domain_name", "scope", "state", "cname", "cname_ready", "cdn_status", "task_status"]
     },
     {
       "tool_id": "seenical.site.domain.check", "version": 1,
       "function_name": "seenical_site_domain_check", "title": "检查网站 CNAME",
-      "description": "Check whether one site's custom-domain CNAME is correctly configured.", "risk": "read",
+      "description": "Check one site's custom-domain CNAME. When DNS is ready, this updates site state and starts CDN configuration, so user confirmation is required.", "risk": "write",
       "parameters": {"type": "object", "properties": {"site_id": {"type": "string", "description": "Existing site ID."}}, "required": ["site_id"], "additionalProperties": false},
       "request": {"method": "GET", "path": "/app/grow_ai/site_custom_domain_check_cname", "arguments": "query"},
-      "result_fields": ["domain", "status", "cname", "valid"]
+      "result_fields": ["site_id", "domain_id", "domain_name", "scope", "state", "cname", "cname_ready", "cdn_status", "task_status"]
     },
     {
       "tool_id": "seenical.site.domains.list", "version": 1,
@@ -98,13 +98,14 @@
     {
       "tool_id": "seenical.site.domain.create", "version": 1,
       "function_name": "seenical_site_domain_create", "title": "创建自定义域名",
-      "description": "Create a custom-domain record for one site. DNS changes remain the user's responsibility.", "risk": "write",
+      "description": "Create or replace the custom-domain record for one site. Replacing it removes the previous CDN configuration; DNS changes remain the user's responsibility.", "risk": "destructive",
       "parameters": {"type": "object", "properties": {
         "site_id": {"type": "string", "description": "Existing site ID."},
-        "domain": {"type": "string", "description": "Public DNS hostname without protocol or path."}
-      }, "required": ["site_id", "domain"], "additionalProperties": false},
+        "domain_name": {"type": "string", "description": "Public DNS hostname without protocol or path."},
+        "scope": {"type": "string", "enum": ["global", "domestic", "overseas"], "description": "Optional CDN scope; defaults to global."}
+      }, "required": ["site_id", "domain_name"], "additionalProperties": false},
       "request": {"method": "POST", "path": "/app/grow_ai/create_custom_domain", "arguments": "body"},
-      "result_fields": ["site_id", "domain", "status", "cname"]
+      "result_fields": ["site_id", "domain_id", "domain_name", "scope", "state", "status", "cname", "verify_key", "verify_code", "root_domain"]
     }
   ]
 }

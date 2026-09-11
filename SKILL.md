@@ -7,9 +7,46 @@ description: Manage Seenical Agents, content generation plans, sites, previews, 
 
 Use the tools exposed by the current Seenical runtime to manage models,
 Agents, plugins, knowledge bases, content plans, sites and publishing. Tool
-schemas are complete enough to construct calls without loading references;
-the files under `references/` are maintenance guides for humans and future
-Codex/MCP integrations.
+schemas exposed by the host are authoritative for execution. When the host
+does not expose named tools but provides a compatible authenticated Butler API
+runtime, use the canonical API catalog below to discover the available calls.
+
+## API catalog
+
+Read [`.seenical/runtime.json`](.seenical/runtime.json) before using the raw
+Butler API catalog. It defines the required runtime and authentication mode.
+Then read only the Tool file for the business domain needed by the request:
+
+- Agents, intelligent messaging, models and bindings:
+  [`references/api/agents.json`](references/api/agents.json), with additional
+  guidance in [`references/agents.md`](references/agents.md).
+- AI plugins and FunctionCall configuration:
+  [`references/api/plugins.json`](references/api/plugins.json), with guidance
+  in [`references/plugins.md`](references/plugins.md).
+- Knowledge bases, sources, documents and processing tasks:
+  [`references/api/knowledge-bases.json`](references/api/knowledge-bases.json),
+  with guidance in
+  [`references/knowledge-bases.md`](references/knowledge-bases.md).
+- Content plans, runs, previews, publishing and deployment:
+  [`references/api/content.json`](references/api/content.json), with guidance
+  in [`references/content.md`](references/content.md).
+- Sites, SEO and custom domains:
+  [`references/api/sites.json`](references/api/sites.json), with guidance in
+  [`references/sites.md`](references/sites.md).
+
+Each Tool entry is the canonical contract for its Tool ID, function name,
+relative Butler path, HTTP method, argument placement, JSON Schema, risk and
+allowed result fields. Never invent an endpoint or parameter that is absent
+from the selected Tool file. Business APIs live under the standard
+`references/` directory so Codex and other Skill readers can discover the same
+definitions that the Seenical runtime consumes.
+
+Knowing the catalog does not itself grant execution. Call it only when the
+host supplies either the declared `butler_api/v1` runtime or an MCP/tool adapter
+for these Tool IDs. The host must provide its own authenticated base URL,
+session and App context. If no compatible runtime is available, explain that
+the Skill can describe the operation but cannot execute it in the current
+environment; do not ask the user to paste credentials into the conversation.
 
 ## Workflow
 

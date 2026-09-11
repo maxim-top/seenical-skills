@@ -17,9 +17,9 @@
       "risk": "read",
       "parameters": {"type": "object", "properties": {
         "plugin_id": {"type": "string", "description": "Existing plugin ID."},
-        "start": {"type": "integer", "description": "Zero-based first result index."},
-        "end": {"type": "integer", "description": "Inclusive last result index; use a small page such as 19."}
-      }, "required": ["plugin_id", "start", "end"], "additionalProperties": false},
+        "start": {"type": "integer", "description": "Optional zero-based first result index; defaults to 0."},
+        "end": {"type": "integer", "description": "Optional inclusive last result index; defaults to 20."}
+      }, "required": ["plugin_id"], "additionalProperties": false},
       "request": {"method": "GET", "path": "/app/list_ai_functions", "arguments": "query"},
       "result_fields": ["list", "total"]
     },

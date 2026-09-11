@@ -3,13 +3,15 @@
 This is a single-Skill repository for managing Seenical content workflows. Its
 root `SKILL.md`, `agents/`, and `references/` use the standard Skill layout, so
 compatible Agents can discover and read the Skill without understanding the
-Seenical catalog format.
+Seenical catalog format. The root `SKILL.md` explicitly routes Codex and other
+Skill readers to the relevant `references/api/*.json` business contract through
+standard progressive disclosure.
 
 `.seenical/manifest.json` is Seenical-specific publication metadata.
-`.seenical/runtime.json` selects the host-provided Butler API runtime, and
-`.seenical/tools/*.json` maps Tool IDs to relative, existing Butler APIs. Domains,
-tokens, headers, tenant data, and Console configuration must never be committed
-here.
+`.seenical/runtime.json` selects the host-provided Butler API runtime and points
+to `references/api/*.json`, which maps Tool IDs to relative, existing Butler
+APIs. Domains, tokens, headers, tenant data, and Console configuration must
+never be committed here.
 
 ## Repository layout
 
@@ -21,20 +23,20 @@ references/plugins.md
 references/knowledge-bases.md
 references/content.md
 references/sites.md
+references/api/agents.json
+references/api/plugins.json
+references/api/knowledge-bases.json
+references/api/content.json
+references/api/sites.json
 .seenical/manifest.json
 .seenical/runtime.json
-.seenical/tools/agents.json
-.seenical/tools/plugins.json
-.seenical/tools/knowledge-bases.json
-.seenical/tools/content.json
-.seenical/tools/sites.json
 .github/workflows/notify.yml
 ```
 
 To update the Skill:
 
 1. Edit the root `SKILL.md` instructions or its text references.
-2. Keep the manifest Tool list aligned with `.seenical/tools/*.json`. The single
+2. Keep the manifest Tool list aligned with `references/api/*.json`. The single
    descriptor must use `"path": "."`.
 3. Merge the reviewed change to `main`.
 
@@ -50,10 +52,11 @@ used by OpenAI clients such as Codex. It contains only display and invocation
 metadata, does not restrict the Skill to one model provider, and is not read by
 the Seenical Butler API runtime.
 
-This version defines the Tool contracts but does not ship a standalone CLI or
-MCP server. Seenical Console supplies its authenticated HTTP client to
-`butler_api/v1`. Direct execution from Codex can be added later through an MCP
-or OAuth adapter without changing the Skill instructions or Tool IDs.
+This version lets Codex discover and understand the same Tool contracts, but it
+does not ship a standalone CLI or MCP server. Seenical Console supplies its
+authenticated HTTP client to `butler_api/v1`. Direct execution from Codex still
+requires a host-provided Butler runtime or a later MCP/OAuth adapter; API
+knowledge alone does not grant authentication or execution capability.
 
 ## Update notification
 

@@ -7,10 +7,10 @@
     "authentication": "host_console_session"
   },
   "tools_files": [
-    ".seenical/tools/agents.json",
-    ".seenical/tools/plugins.json",
-    ".seenical/tools/knowledge-bases.json",
-    ".seenical/tools/content.json",
-    ".seenical/tools/sites.json"
+    "references/api/agents.json",
+    "references/api/plugins.json",
+    "references/api/knowledge-bases.json",
+    "references/api/content.json",
+    "references/api/sites.json"
   ]
 }
