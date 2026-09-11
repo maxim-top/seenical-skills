@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "tools": [
+    {
+      "tool_id": "seenical.knowledge.list", "version": 1,
+      "function_name": "seenical_knowledge_list", "title": "查看知识库",
+      "description": "List knowledge bases in the current App. Use the returned embedding_name for later operations.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/list_embeddings", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.knowledge.documents.list", "version": 1,
+      "function_name": "seenical_knowledge_documents_list", "title": "查看知识库文档",
+      "description": "List one page of documents in a knowledge base using inclusive start and end indexes.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {
+        "embedding_name": {"type": "string", "description": "Existing knowledge-base name."},
+        "start": {"type": "integer", "description": "Zero-based first document index."},
+        "end": {"type": "integer", "description": "Inclusive last document index."}
+      }, "required": ["embedding_name", "start", "end"], "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/list_embedding_docs", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.knowledge.tasks.list", "version": 1,
+      "function_name": "seenical_knowledge_tasks_list", "title": "查看知识库任务",
+      "description": "List ingestion and processing tasks for one knowledge base.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {
+        "embedding_name": {"type": "string", "description": "Existing knowledge-base name."}
+      }, "required": ["embedding_name"], "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/list_embedding_tasks", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.knowledge.create", "version": 1,
+      "function_name": "seenical_knowledge_create", "title": "创建知识库",
+      "description": "Create a text knowledge base. Choose vendor and model only from the model list; optional fields use Console defaults when omitted.",
+      "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "embedding_name": {"type": "string", "description": "Unique non-empty knowledge-base name."},
+        "algo": {"type": "string", "enum": ["COSINE", "L2", "IP"], "description": "Vector distance algorithm; COSINE is the usual default."},
+        "admin_user_ids": {"type": "array", "items": {"type": "integer"}, "description": "Administrators allowed to maintain this knowledge base."},
+        "max_block_size": {"type": "integer", "description": "Maximum tokens per document block, greater than zero."},
+        "overlapping_size": {"type": "integer", "description": "Overlap tokens between adjacent blocks, zero or greater."},
+        "preset_name": {"type": "string", "description": "Optional Agent preset name to bind."},
+        "vendor": {"type": "string", "description": "Embedding vendor ID."},
+        "model": {"type": "string", "description": "Embedding model ID."}
+      }, "required": ["embedding_name"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/create_embedding", "arguments": "body"},
+      "result_fields": ["success", "id", "embedding_uuid"]
+    },
+    {
+      "tool_id": "seenical.knowledge.update", "version": 1,
+      "function_name": "seenical_knowledge_update", "title": "修改知识库",
+      "description": "Partially update a knowledge base. Omitted fields remain unchanged; empty strings and [] explicitly clear fields that accept them.",
+      "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "embedding_name": {"type": "string", "description": "Current knowledge-base name."},
+        "new_embedding_name": {"type": "string", "description": "New name; empty string keeps the current name."},
+        "admin_user_ids": {"type": "array", "items": {"type": "integer"}, "description": "Complete administrator list; [] clears it."},
+        "preset_name": {"type": "string", "description": "Bound Agent preset name; empty string clears it."},
+        "embedding_max_tokens": {"type": "integer", "description": "Maximum retrieved token count, greater than zero."},
+        "embedding_max_blocks": {"type": "integer", "description": "Maximum retrieved block count, greater than zero."},
+        "embedding_content": {"type": "string", "description": "Knowledge instruction prefix; empty string clears it."},
+        "max_block_size": {"type": "integer", "description": "Maximum block tokens, greater than zero."},
+        "overlapping_size": {"type": "integer", "description": "Overlap tokens, zero or greater."},
+        "vendor": {"type": "string", "description": "Embedding vendor ID."},
+        "model": {"type": "string", "description": "Embedding model ID."},
+        "tags": {"type": "array", "items": {"type": "object"}, "description": "Complete tag definition list; [] clears tags."}
+      }, "required": ["embedding_name"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/configure_embedding", "arguments": "body"},
+      "result_fields": ["success", "id", "changed_fields", "resource"]
+    },
+    {
+      "tool_id": "seenical.knowledge.source.add", "version": 1,
+      "function_name": "seenical_knowledge_source_add", "title": "添加公开知识来源",
+      "description": "Add a public URL or website to a knowledge base. type=url uses url; type=site may use urls, crawl limit, filters and max_depth. Local files are not supported by this runtime.",
+      "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "embedding_name": {"type": "string", "description": "Target knowledge-base name."},
+        "type": {"type": "string", "enum": ["url", "site"], "description": "url for one public page or site for a crawl."},
+        "url": {"type": "string", "description": "Public HTTP or HTTPS source URL."},
+        "urls": {"type": "array", "items": {"type": "string"}, "description": "Public starting URLs for a site crawl."},
+        "limit": {"type": "integer", "description": "Maximum pages to ingest."},
+        "filters": {"type": "array", "items": {"type": "string"}, "description": "URL path filters; [] means no filters."},
+        "max_depth": {"type": "integer", "description": "Maximum crawl depth, zero or greater."},
+        "generate_lanying_links": {"type": "boolean", "description": "Whether to generate BlueLink content for discovered pages."},
+        "tags": {"type": "object", "description": "Tags applied to ingested content."}
+      }, "required": ["embedding_name", "type"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/add_doc_to_embedding", "arguments": "body"},
+      "result_fields": ["success", "task_id"]
+    },
+    {
+      "tool_id": "seenical.knowledge.task.continue", "version": 1,
+      "function_name": "seenical_knowledge_task_continue", "title": "继续知识库任务",
+      "description": "Continue one stopped or incomplete knowledge ingestion task after reading its current status.",
+      "risk": "execute",
+      "parameters": {"type": "object", "properties": {
+        "embedding_name": {"type": "string", "description": "Knowledge-base name."},
+        "task_id": {"type": "string", "description": "Existing processing task ID."}
+      }, "required": ["embedding_name", "task_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/continue_embedding_task", "arguments": "body"},
+      "result_fields": ["success", "task_id", "status"]
+    },
+    {
+      "tool_id": "seenical.knowledge.document.retry", "version": 1,
+      "function_name": "seenical_knowledge_document_retry", "title": "重新处理知识库文档",
+      "description": "Reprocess one existing knowledge document after reading its failed state.",
+      "risk": "execute",
+      "parameters": {"type": "object", "properties": {
+        "embedding_name": {"type": "string", "description": "Knowledge-base name."},
+        "doc_id": {"type": "string", "description": "Existing document ID."}
+      }, "required": ["embedding_name", "doc_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/re_run_doc_to_embedding", "arguments": "body"},
+      "result_fields": ["success", "doc_id", "status"]
+    },
+    {
+      "tool_id": "seenical.knowledge.retry_all", "version": 1,
+      "function_name": "seenical_knowledge_retry_all", "title": "重新处理全部知识文档",
+      "description": "Reprocess every document in one knowledge base; this can consume substantial model capacity.",
+      "risk": "execute",
+      "parameters": {"type": "object", "properties": {
+        "embedding_name": {"type": "string", "description": "Knowledge-base name."}
+      }, "required": ["embedding_name"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/re_run_all_doc_to_embedding", "arguments": "body"},
+      "result_fields": ["success", "status"]
+    }
+  ]
+}

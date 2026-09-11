@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "tools": [
+    {
+      "tool_id": "seenical.plugin.list", "version": 1,
+      "function_name": "seenical_plugin_list", "title": "查看 AI 插件",
+      "description": "List AI plugins in the current App. Use the returned plugin_id rather than guessing an ID.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/list_ai_plugins", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.plugin.functions.list", "version": 1,
+      "function_name": "seenical_plugin_functions_list", "title": "查看插件函数",
+      "description": "List FunctionCall definitions belonging to one plugin with inclusive start and end indexes.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {
+        "plugin_id": {"type": "string", "description": "Existing plugin ID."},
+        "start": {"type": "integer", "description": "Zero-based first result index."},
+        "end": {"type": "integer", "description": "Inclusive last result index; use a small page such as 19."}
+      }, "required": ["plugin_id", "start", "end"], "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/list_ai_functions", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.plugin.create", "version": 1,
+      "function_name": "seenical_plugin_create", "title": "创建 AI 插件",
+      "description": "Create an empty AI plugin. Functions and Agent bindings are separate operations.",
+      "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "plugin_name": {"type": "string", "description": "Non-empty plugin display name."}
+      }, "required": ["plugin_name"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/create_ai_plugin", "arguments": "body"},
+      "result_fields": ["id", "plugin_id", "name"]
+    },
+    {
+      "tool_id": "seenical.plugin.update", "version": 1,
+      "function_name": "seenical_plugin_update", "title": "修改 AI 插件",
+      "description": "Partially update a plugin name or public HTTPS callback endpoint. Omitted fields remain unchanged; credentials and custom headers are unavailable.",
+      "risk": "destructive",
+      "parameters": {"type": "object", "properties": {
+        "plugin_id": {"type": "string", "description": "Existing plugin ID."},
+        "name": {"type": "string", "description": "Plugin display name; empty string is not valid."},
+        "endpoint": {"type": "string", "description": "Public HTTPS callback base URL; empty string clears it. Private, loopback and local addresses are rejected."}
+      }, "required": ["plugin_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/configure_ai_plugin", "arguments": "body"},
+      "result_fields": ["success", "id", "changed_fields", "resource"]
+    },
+    {
+      "tool_id": "seenical.plugin.function.update", "version": 1,
+      "function_name": "seenical_plugin_function_update", "title": "修改插件函数",
+      "description": "Partially update non-secret FunctionCall metadata or its JSON parameter schema. Read the function first and send only requested fields.",
+      "risk": "destructive",
+      "parameters": {"type": "object", "properties": {
+        "plugin_id": {"type": "string", "description": "Owning plugin ID."},
+        "function_id": {"type": "string", "description": "Existing function ID."},
+        "name": {"type": "string", "description": "Function name exposed to the model."},
+        "description": {"type": "string", "description": "Clear description of when and how to call the function."},
+        "parameters": {"type": "object", "description": "Complete JSON Schema for function arguments."},
+        "priority": {"type": "integer", "description": "Function selection priority."},
+        "force_call": {"type": "boolean", "description": "Whether the function is forced for matching messages."}
+      }, "required": ["plugin_id", "function_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/configure_ai_function", "arguments": "body"},
+      "result_fields": ["success", "id", "changed_fields", "resource"]
+    },
+    {
+      "tool_id": "seenical.plugin_knowledge.get", "version": 1,
+      "function_name": "seenical_plugin_knowledge_get", "title": "查看插件知识配置",
+      "description": "Read the shared knowledge retrieval model and limits used by AI plugins.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/get_ai_plugin_embedding", "arguments": "query"},
+      "result_fields": ["embedding_max_tokens", "embedding_max_blocks", "vendor", "model"]
+    },
+    {
+      "tool_id": "seenical.plugin_knowledge.update", "version": 1,
+      "function_name": "seenical_plugin_knowledge_update", "title": "修改插件知识配置",
+      "description": "Partially update plugin knowledge retrieval limits or embedding model; omitted fields remain unchanged.",
+      "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "embedding_max_tokens": {"type": "integer", "description": "Maximum retrieved knowledge tokens, greater than zero."},
+        "embedding_max_blocks": {"type": "integer", "description": "Maximum retrieved blocks, greater than zero."},
+        "vendor": {"type": "string", "description": "Embedding vendor from seenical.model.list."},
+        "model": {"type": "string", "description": "Embedding model from seenical.model.list."}
+      }, "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/configure_ai_plugin_embedding", "arguments": "body"},
+      "result_fields": ["success", "id", "changed_fields", "resource"]
+    }
+  ]
+}

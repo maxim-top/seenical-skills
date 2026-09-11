@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "tools": [
+    {
+      "tool_id": "seenical.messaging.status", "version": 1,
+      "function_name": "seenical_messaging_status", "title": "查看智能消息状态",
+      "description": "Read the current App's intelligent-messaging service status and non-sensitive quota/history settings. Credentials are never returned to the model.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/config/lanying_connector", "arguments": "query"},
+      "result_fields": ["enable", "userId", "service", "messagePerMonthPerUser", "dailyQuotaFusePercent", "historyMsgCountMin", "historyMsgCountMax", "historyMsgSizeMax"]
+    },
+    {
+      "tool_id": "seenical.model.list", "version": 1,
+      "function_name": "seenical_model_list", "title": "查看可用模型",
+      "description": "List chat and embedding models available to the current App. Use before changing an Agent model; never invent a vendor or model ID.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/list_models", "arguments": "query"},
+      "result_fields": ["list", "models", "vendors"]
+    },
+    {
+      "tool_id": "seenical.agent.list", "version": 1,
+      "function_name": "seenical_agent_list", "title": "查看 Agent 列表",
+      "description": "List Agents in the current App so a real chatbot_id can be selected before reading or changing configuration.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/list_chatbots", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.agent.create", "version": 1,
+      "function_name": "seenical_agent_create", "title": "创建 Agent",
+      "description": "Create an Agent. name is the display name and desc is its optional description; creation does not bind plugins or knowledge bases.",
+      "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "name": {"type": "string", "description": "Agent name, non-empty."},
+        "desc": {"type": "string", "description": "Optional Agent description; an empty string clears it."},
+        "nickname": {"type": "string", "description": "Optional chat nickname."}
+      }, "required": ["name"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/create_chatbot", "arguments": "body"},
+      "result_fields": ["id", "chatbot_id", "name"]
+    },
+    {
+      "tool_id": "seenical.agent.update", "version": 1,
+      "function_name": "seenical_agent_update", "title": "修改 Agent 配置",
+      "description": "Partially update an Agent. Send chatbot_id plus only requested fields; omitted fields remain unchanged and plugin_ids=[] explicitly unbinds all plugins.",
+      "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "chatbot_id": {"type": "string", "description": "Existing Agent ID from seenical.agent.list."},
+        "system_prompt": {"type": "string", "description": "System prompt, maximum 20000 characters; empty string clears it."},
+        "vendor": {"type": "string", "description": "Model vendor ID returned by seenical.model.list."},
+        "model": {"type": "string", "description": "Model ID returned by seenical.model.list."},
+        "plugin_ids": {"type": "array", "description": "Complete plugin binding list; [] unbinds all plugins.", "items": {"type": "string"}}
+      }, "required": ["chatbot_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/configure_chatbot", "arguments": "body"},
+      "result_fields": ["id", "changed_fields", "resource"]
+    },
+    {
+      "tool_id": "seenical.agent_plugin_bindings.get", "version": 1,
+      "function_name": "seenical_agent_plugin_bindings_get", "title": "查看 Agent 插件绑定",
+      "description": "Read the current Agent-to-plugin binding relations before changing them.",
+      "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/get_ai_plugin_bind_relation", "arguments": "query"},
+      "result_fields": ["relations", "list"]
+    },
+    {
+      "tool_id": "seenical.agent_plugin_bindings.update", "version": 1,
+      "function_name": "seenical_agent_plugin_bindings_update", "title": "修改 Agent 插件绑定",
+      "description": "Replace one Agent or plugin binding list. Read current relations first; list=[] explicitly removes the selected relation.",
+      "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "type": {"type": "string", "enum": ["plugin_list", "preset_name_list"], "description": "plugin_list binds plugins to an Agent name; preset_name_list binds one plugin to Agent names."},
+        "name": {"type": "string", "description": "Agent preset name for plugin_list, or plugin ID for preset_name_list."},
+        "list": {"type": "array", "items": {"type": "string"}, "description": "Complete target ID/name list; [] clears the binding."}
+      }, "required": ["type", "name", "list"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/bind_ai_plugin", "arguments": "body"},
+      "result_fields": ["success", "changed_fields"]
+    }
+  ]
+}

@@ -6,5 +6,11 @@
     "version": 1,
     "authentication": "host_console_session"
   },
-  "tools_file": ".seenical/tools.json"
+  "tools_files": [
+    ".seenical/tools/agents.json",
+    ".seenical/tools/plugins.json",
+    ".seenical/tools/knowledge-bases.json",
+    ".seenical/tools/content.json",
+    ".seenical/tools/sites.json"
+  ]
 }

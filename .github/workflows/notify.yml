@@ -1,4 +1,4 @@
-name: Notify Seenical Connector
+name: Notify Skill Update
 
 on:
   push:
@@ -15,17 +15,17 @@ permissions:
   contents: read
 
 concurrency:
-  group: seenical-public-skill-notify
+  group: seenical-skill-notify
   cancel-in-progress: false
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     env:
-      # Replace this value before publishing the repository.
-      CONNECTOR_NOTIFY_URL: https://connector.example.com/service/agent_tools/public_catalog/notify
+      NOTIFY_URL: ${{ vars.NOTIFY_URL }}
     steps:
-      - name: Notify Connector to pull the configured repository
+      - name: Send update notification
+        if: ${{ env.NOTIFY_URL != '' }}
         env:
           REPOSITORY: ${{ github.repository }}
           REF: ${{ github.ref }}
@@ -42,4 +42,4 @@ jobs:
             --retry 2 --retry-delay 3 --retry-all-errors \
             -H "Content-Type: application/json" \
             --data "$payload" \
-            "$CONNECTOR_NOTIFY_URL"
+            "$NOTIFY_URL"

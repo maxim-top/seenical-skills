@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "definitions": {
+    "task_id": {"type": "string", "description": "Existing generation-plan ID returned by seenical.plan.list."},
+    "task_run_id": {"type": "string", "description": "Existing generation-run ID."},
+    "preview_id": {"type": "string", "description": "Existing preview ID."}
+  },
+  "tools": [
+    {
+      "tool_id": "seenical.content.usage", "version": 1,
+      "function_name": "seenical_content_usage", "title": "查看内容服务用量",
+      "description": "Read current Seenical content-generation usage and limits.", "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/usage", "arguments": "query"},
+      "result_fields": ["usage", "limits", "storage", "traffic"]
+    },
+    {
+      "tool_id": "seenical.plan.list", "version": 1,
+      "function_name": "seenical_plan_list", "title": "查看生成计划",
+      "description": "List content-generation plans and their current schedule/status. Read this before selecting a task_id.", "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/get_task_list", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.plan.create", "version": 1,
+      "function_name": "seenical_plan_create", "title": "创建生成计划",
+      "description": "Create a plan without running it. name, prompt and chatbot_id identify the plan, content theme and Agent; omitted optional fields use Seenical defaults.", "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "name": {"type": "string", "description": "Plan name, 1-200 characters."},
+        "prompt": {"type": "string", "description": "Long-term content topic/instructions, maximum 20000 characters."},
+        "chatbot_id": {"type": "string", "description": "Existing Agent ID used to generate content."},
+        "note": {"type": "string", "description": "Optional plan note; defaults to prompt."},
+        "article_prompt": {"type": "string", "description": "Optional per-article instruction, maximum 5000 characters; empty string clears it."},
+        "article_language": {"type": "string", "enum": ["auto", "zh-hans", "en"], "description": "Article language: auto, Simplified Chinese or English."},
+        "keywords": {"type": "string", "description": "Optional keyword text; empty string means no fixed keywords."},
+        "word_count_min": {"type": "integer", "description": "Minimum words per article, zero or greater."},
+        "word_count_max": {"type": "integer", "description": "Maximum words, not less than word_count_min."},
+        "image_count": {"type": "integer", "description": "Images per article, zero or greater."},
+        "article_count": {"type": "integer", "description": "Article count from 1 to 100000."},
+        "cycle_type": {"type": "string", "enum": ["none", "cycle"], "description": "none for no recurring schedule, cycle for recurring."},
+        "cycle_interval": {"type": "integer", "description": "Recurring interval in seconds, minimum 3600."},
+        "title_reuse": {"type": "string", "enum": ["on", "off"], "description": "Whether used titles may be reused."},
+        "site_id_list": {"type": "array", "items": {"type": "string"}, "description": "Target site IDs; [] means no site binding."},
+        "target_dir": {"type": "string", "description": "Repository article directory such as /articles."},
+        "commit_type": {"type": "string", "enum": ["branch", "pull_request"], "description": "Git delivery mode."},
+        "target_summary_dir": {"type": "string", "description": "Optional summary output directory."},
+        "embedding_condition": {"type": "object", "description": "Optional knowledge retrieval filter expression."},
+        "auto_deploy": {"type": "string", "enum": ["on", "off"], "description": "Whether completed output deploys automatically."},
+        "run_immediately": {"type": "boolean", "enum": [false], "description": "Must be false; running is a separate confirmed operation."}
+      }, "required": ["name", "prompt", "chatbot_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/create_task", "arguments": "body"},
+      "result_fields": ["id", "task_id", "status"]
+    },
+    {
+      "tool_id": "seenical.plan.update", "version": 1,
+      "function_name": "seenical_plan_update", "title": "修改生成计划",
+      "description": "Partially update a plan. Send task_id and only user-requested fields; omitted fields and pause state remain unchanged. Empty strings and [] explicitly clear supported fields.", "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "task_id": {"$ref": "#/definitions/task_id"},
+        "name": {"type": "string", "description": "Plan name, 1-200 characters."},
+        "note": {"type": "string", "description": "Plan note; empty string clears it."},
+        "chatbot_id": {"type": "string", "description": "Existing Agent ID used for future generations."},
+        "prompt": {"type": "string", "description": "Content theme/instructions, maximum 20000 characters."},
+        "article_prompt": {"type": "string", "description": "Per-article instruction, maximum 5000 characters; empty string clears it."},
+        "article_language": {"type": "string", "enum": ["auto", "zh-hans", "en"], "description": "Article language."},
+        "keywords": {"type": "string", "description": "Keyword text; empty string clears it."},
+        "word_count_min": {"type": "integer", "description": "Minimum words, zero or greater."},
+        "word_count_max": {"type": "integer", "description": "Maximum words, not less than minimum."},
+        "image_count": {"type": "integer", "description": "Images per article, zero or greater."},
+        "article_count": {"type": "integer", "description": "Article count from 1 to 100000."},
+        "cycle_type": {"type": "string", "enum": ["none", "cycle"], "description": "Schedule type; this does not resume a paused plan."},
+        "cycle_interval": {"type": "integer", "description": "Cycle seconds, minimum 3600."},
+        "title_reuse": {"type": "string", "enum": ["on", "off"], "description": "Title reuse setting."},
+        "site_id_list": {"type": "array", "items": {"type": "string"}, "description": "Complete target-site list; [] clears it."},
+        "target_dir": {"type": "string", "description": "Article output directory."},
+        "commit_type": {"type": "string", "enum": ["branch", "pull_request"], "description": "Git delivery mode."},
+        "target_summary_dir": {"type": "string", "description": "Summary output directory; empty string clears it."},
+        "embedding_condition": {"type": "object", "description": "Knowledge retrieval filter expression; {} clears custom filtering."},
+        "auto_deploy": {"type": "string", "enum": ["on", "off"], "description": "Automatic deployment setting."}
+      }, "required": ["task_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/configure_task", "arguments": "body"},
+      "result_fields": ["id", "changed_fields", "resource", "task"]
+    },
+    {
+      "tool_id": "seenical.plan.schedule", "version": 1,
+      "function_name": "seenical_plan_schedule", "title": "暂停或恢复计划",
+      "description": "Set only a plan's schedule state. schedule=off pauses and schedule=on resumes; no other plan field changes.", "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "task_id": {"$ref": "#/definitions/task_id"},
+        "schedule": {"type": "string", "enum": ["on", "off"], "description": "on resumes scheduling; off pauses it."}
+      }, "required": ["task_id", "schedule"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/set_task_schedule", "arguments": "body"},
+      "result_fields": ["task_id", "schedule", "status"]
+    },
+    {
+      "tool_id": "seenical.plan.run", "version": 1,
+      "function_name": "seenical_plan_run", "title": "立即运行计划",
+      "description": "Start one generation run for an existing plan; this is separate from creating or editing the plan.", "risk": "execute",
+      "parameters": {"type": "object", "properties": {"task_id": {"$ref": "#/definitions/task_id"}}, "required": ["task_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/run_task", "arguments": "body"},
+      "result_fields": ["task_id", "task_run_id", "status"]
+    },
+    {
+      "tool_id": "seenical.plan_runs.list", "version": 1,
+      "function_name": "seenical_plan_runs_list", "title": "查看计划运行记录",
+      "description": "List generation runs for one plan.", "risk": "read",
+      "parameters": {"type": "object", "properties": {"task_id": {"$ref": "#/definitions/task_id"}}, "required": ["task_id"], "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/get_task_run_list", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.plan_run.results", "version": 1,
+      "function_name": "seenical_plan_run_results", "title": "查看生成结果",
+      "description": "List generated article/file results for one run.", "risk": "read",
+      "parameters": {"type": "object", "properties": {"task_run_id": {"$ref": "#/definitions/task_run_id"}}, "required": ["task_run_id"], "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/get_task_run_result_list", "arguments": "query"},
+      "result_fields": ["list", "total", "status"]
+    },
+    {
+      "tool_id": "seenical.plan_run.retry", "version": 1,
+      "function_name": "seenical_plan_run_retry", "title": "重试生成任务",
+      "description": "Retry a failed generation run after reading its status.", "risk": "execute",
+      "parameters": {"type": "object", "properties": {"task_run_id": {"$ref": "#/definitions/task_run_id"}}, "required": ["task_run_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/task_run_retry", "arguments": "body"},
+      "result_fields": ["task_run_id", "status", "success"]
+    },
+    {
+      "tool_id": "seenical.preview.create", "version": 1,
+      "function_name": "seenical_preview_create", "title": "创建内容预览",
+      "description": "Create a publishable preview from one completed generation run.", "risk": "execute",
+      "parameters": {"type": "object", "properties": {"task_run_id": {"$ref": "#/definitions/task_run_id"}}, "required": ["task_run_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/task_run_preview", "arguments": "body"},
+      "result_fields": ["preview_id", "task_run_id", "status", "url"]
+    },
+    {
+      "tool_id": "seenical.preview.retry", "version": 1,
+      "function_name": "seenical_preview_retry", "title": "重试内容预览",
+      "description": "Retry preparation of one failed preview.", "risk": "execute",
+      "parameters": {"type": "object", "properties": {"preview_id": {"$ref": "#/definitions/preview_id"}}, "required": ["preview_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/preview_retry", "arguments": "body"},
+      "result_fields": ["preview_id", "status", "url"]
+    },
+    {
+      "tool_id": "seenical.preview.publish", "version": 1,
+      "function_name": "seenical_preview_publish", "title": "发布内容预览",
+      "description": "Publish an approved preview. This changes the live site and always requires strong confirmation.", "risk": "destructive",
+      "parameters": {"type": "object", "properties": {"preview_id": {"$ref": "#/definitions/preview_id"}}, "required": ["preview_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/preview_publish", "arguments": "body"},
+      "result_fields": ["preview_id", "status", "deployment_id"]
+    },
+    {
+      "tool_id": "seenical.preview.discard", "version": 1,
+      "function_name": "seenical_preview_discard", "title": "丢弃内容预览",
+      "description": "Discard an unpublished preview without deleting the generation run. Always requires strong confirmation.", "risk": "destructive",
+      "parameters": {"type": "object", "properties": {"preview_id": {"$ref": "#/definitions/preview_id"}}, "required": ["preview_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/preview_discard", "arguments": "body"},
+      "result_fields": ["preview_id", "status", "success"]
+    },
+    {
+      "tool_id": "seenical.plan_run.deploy", "version": 1,
+      "function_name": "seenical_plan_run_deploy", "title": "部署生成结果",
+      "description": "Deploy one completed generation run according to its configured site target. Read plan and run state before execution.", "risk": "execute",
+      "parameters": {"type": "object", "properties": {"task_run_id": {"$ref": "#/definitions/task_run_id"}}, "required": ["task_run_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/task_run_deploy", "arguments": "body"},
+      "result_fields": ["task_run_id", "status", "deployment_id", "url"]
+    }
+  ]
+}

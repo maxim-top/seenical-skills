@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "tools": [
+    {
+      "tool_id": "seenical.site.list", "version": 1,
+      "function_name": "seenical_site_list", "title": "查看网站",
+      "description": "List Seenical sites and their non-sensitive configuration in the current App. Use returned site_id values for later operations.", "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/get_site_list", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.site.create", "version": 1,
+      "function_name": "seenical_site_create", "title": "创建网站",
+      "description": "Create a hosted GitBook site using Seenical Console defaults. Repository credentials and provider tokens cannot be supplied by this Skill.", "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "name": {"type": "string", "description": "Site name, non-empty."},
+        "title": {"type": "string", "description": "Browser/document title; defaults to name."},
+        "footer_note": {"type": "string", "description": "Footer disclosure; empty string clears it."},
+        "lanying_link": {"type": "string", "description": "Optional public BlueLink URL; empty string disables it."},
+        "copyright": {"type": "string", "description": "Copyright text; empty string clears it."},
+        "canonical_link": {"type": "string", "description": "Public HTTP/HTTPS canonical URL."},
+        "meta_keywords": {"type": "string", "description": "SEO keywords; empty string clears them."},
+        "official_website_url": {"type": "string", "description": "Public official website URL."},
+        "max_latest_num": {"type": "integer", "description": "Number of latest articles shown, 1-100."},
+        "language": {"type": "string", "enum": ["zh-hans", "en"], "description": "Single site language used by GitBook UI."},
+        "commit_type": {"type": "string", "enum": ["branch", "pull_request"], "description": "Content delivery mode."},
+        "icp_number": {"type": "string", "description": "Optional ICP registration number."},
+        "hook_sentence_slogan": {"type": "string", "description": "Landing-page slogan."},
+        "hook_sentence_image": {"type": "string", "description": "Public HTTP/HTTPS slogan image URL."},
+        "collaborator": {"type": "string", "description": "Optional GitHub collaborator login; empty string clears it."}
+      }, "required": ["name"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/create_site", "arguments": "body"},
+      "result_fields": ["id", "site_id", "status", "url"]
+    },
+    {
+      "tool_id": "seenical.site.update", "version": 1,
+      "function_name": "seenical_site_update", "title": "修改网站配置",
+      "description": "Partially update non-sensitive site, SEO and publishing settings. Send only requested fields; omitted values remain unchanged and empty strings explicitly clear text fields.", "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "site_id": {"type": "string", "description": "Existing site ID."},
+        "name": {"type": "string", "description": "Site name."},
+        "title": {"type": "string", "description": "Document title; empty string clears it."},
+        "footer_note": {"type": "string", "description": "Footer text; empty string clears it."},
+        "lanying_link": {"type": "string", "description": "Public BlueLink URL; empty string disables it."},
+        "copyright": {"type": "string", "description": "Copyright text; empty string clears it."},
+        "canonical_link": {"type": "string", "description": "Public HTTP/HTTPS canonical URL; empty string clears it."},
+        "meta_keywords": {"type": "string", "description": "SEO keywords; empty string clears them."},
+        "official_website_url": {"type": "string", "description": "Public HTTP/HTTPS official website URL."},
+        "max_latest_num": {"type": "integer", "description": "Latest article count, 1-100."},
+        "language": {"type": "string", "enum": ["zh-hans", "en"], "description": "Single site language."},
+        "commit_type": {"type": "string", "enum": ["branch", "pull_request"], "description": "Git delivery mode."},
+        "icp_number": {"type": "string", "description": "ICP number; empty string clears it."},
+        "hook_sentence_slogan": {"type": "string", "description": "Landing slogan; empty string clears it."},
+        "hook_sentence_image": {"type": "string", "description": "Public image URL; empty string clears it."},
+        "collaborator": {"type": "string", "description": "GitHub collaborator login; empty string clears it."}
+      }, "required": ["site_id"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/configure_site", "arguments": "body"},
+      "result_fields": ["id", "changed_fields", "resource"]
+    },
+    {
+      "tool_id": "seenical.site.statistics", "version": 1,
+      "function_name": "seenical_site_statistics", "title": "查看网站统计",
+      "description": "Read selected site statistics for an optional date range.", "risk": "read",
+      "parameters": {"type": "object", "properties": {
+        "site_id": {"type": "string", "description": "Existing site ID."},
+        "start_date": {"type": "string", "description": "Optional inclusive start date in YYYY-MM-DD."},
+        "end_date": {"type": "string", "description": "Optional inclusive end date in YYYY-MM-DD."},
+        "targets": {"type": "array", "items": {"type": "string"}, "description": "Statistics metric names requested by the user."}
+      }, "required": ["site_id", "targets"], "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/site_statistics", "arguments": "query"},
+      "result_fields": ["statistics", "list", "total"]
+    },
+    {
+      "tool_id": "seenical.site.domain.get", "version": 1,
+      "function_name": "seenical_site_domain_get", "title": "查看网站域名状态",
+      "description": "Read custom-domain configuration and verification state for one site.", "risk": "read",
+      "parameters": {"type": "object", "properties": {"site_id": {"type": "string", "description": "Existing site ID."}}, "required": ["site_id"], "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/get_site_custom_domain_info", "arguments": "query"},
+      "result_fields": ["domain", "status", "cname", "site_id"]
+    },
+    {
+      "tool_id": "seenical.site.domain.check", "version": 1,
+      "function_name": "seenical_site_domain_check", "title": "检查网站 CNAME",
+      "description": "Check whether one site's custom-domain CNAME is correctly configured.", "risk": "read",
+      "parameters": {"type": "object", "properties": {"site_id": {"type": "string", "description": "Existing site ID."}}, "required": ["site_id"], "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/site_custom_domain_check_cname", "arguments": "query"},
+      "result_fields": ["domain", "status", "cname", "valid"]
+    },
+    {
+      "tool_id": "seenical.site.domains.list", "version": 1,
+      "function_name": "seenical_site_domains_list", "title": "查看自定义域名列表",
+      "description": "List custom domains configured for the current App.", "risk": "read",
+      "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/get_site_custom_domain_info_list", "arguments": "query"},
+      "result_fields": ["list", "total"]
+    },
+    {
+      "tool_id": "seenical.site.domain.create", "version": 1,
+      "function_name": "seenical_site_domain_create", "title": "创建自定义域名",
+      "description": "Create a custom-domain record for one site. DNS changes remain the user's responsibility.", "risk": "write",
+      "parameters": {"type": "object", "properties": {
+        "site_id": {"type": "string", "description": "Existing site ID."},
+        "domain": {"type": "string", "description": "Public DNS hostname without protocol or path."}
+      }, "required": ["site_id", "domain"], "additionalProperties": false},
+      "request": {"method": "POST", "path": "/app/grow_ai/create_custom_domain", "arguments": "body"},
+      "result_fields": ["site_id", "domain", "status", "cname"]
+    }
+  ]
+}
