@@ -48,7 +48,7 @@
         "embedding_condition": {"type": "object", "description": "Optional knowledge retrieval filter expression."},
         "auto_deploy": {"type": "string", "enum": ["on", "off"], "description": "Whether completed output deploys automatically."},
         "run_immediately": {"type": "boolean", "enum": [false], "description": "Must be false; running is a separate confirmed operation."}
-      }, "required": ["name", "prompt", "chatbot_id"], "additionalProperties": false},
+      }, "required": ["name", "prompt", "chatbot_id", "run_immediately"], "additionalProperties": false},
       "request": {"method": "POST", "path": "/app/grow_ai/create_task", "arguments": "body"},
       "result_fields": ["id", "task_id", "status"]
     },
