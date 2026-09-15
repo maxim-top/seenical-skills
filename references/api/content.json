@@ -17,7 +17,7 @@
     {
       "tool_id": "seenical.plan.list", "version": 1,
       "function_name": "seenical_plan_list", "title": "查看生成计划",
-      "description": "List content-generation plans and their current schedule/status. Read this before selecting a task_id.", "risk": "read",
+      "description": "List content-generation plans and their current configuration. Text fields are distinct: prompt is the plan topic, article_prompt is the per-article instruction, and note is descriptive/legacy text. For an article-prompt question use only article_prompt; if it is empty, report it as not configured and never substitute prompt or note. Read this list before selecting a task_id.", "risk": "read",
       "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
       "request": {"method": "GET", "path": "/app/grow_ai/get_task_list", "arguments": "query"},
       "result_fields": ["list", "total"]
@@ -28,10 +28,10 @@
       "description": "Create a plan without running it. name, prompt and chatbot_id identify the plan, content theme and Agent; omitted optional fields use Seenical defaults.", "risk": "write",
       "parameters": {"type": "object", "properties": {
         "name": {"type": "string", "description": "Plan name, 1-200 characters."},
-        "prompt": {"type": "string", "description": "Long-term content topic/instructions, maximum 20000 characters."},
+        "prompt": {"type": "string", "description": "Plan topic (计划主题): the continuing content subject, maximum 20000 characters. This is not the article prompt."},
         "chatbot_id": {"type": "string", "description": "Existing Agent ID used to generate content."},
-        "note": {"type": "string", "description": "Optional plan note; defaults to prompt."},
-        "article_prompt": {"type": "string", "description": "Optional per-article instruction, maximum 5000 characters; empty string clears it."},
+        "note": {"type": "string", "description": "Optional descriptive/legacy plan text; defaults to prompt. This is not the article prompt."},
+        "article_prompt": {"type": "string", "description": "Article prompt (文章提示词): extra instruction applied to every generated article, maximum 5000 characters. Empty string means no article prompt is configured and explicitly clears it."},
         "article_language": {"type": "string", "enum": ["auto", "zh-hans", "en"], "description": "Article language: auto, Simplified Chinese or English."},
         "keywords": {"type": "string", "description": "Optional keyword text; empty string means no fixed keywords."},
         "word_count_min": {"type": "integer", "description": "Minimum words per article, zero or greater."},
@@ -59,10 +59,10 @@
       "parameters": {"type": "object", "properties": {
         "task_id": {"$ref": "#/definitions/task_id"},
         "name": {"type": "string", "description": "Plan name, 1-200 characters."},
-        "note": {"type": "string", "description": "Plan note; empty string clears it."},
+        "note": {"type": "string", "description": "Descriptive/legacy plan text, not the article prompt; empty string clears it."},
         "chatbot_id": {"type": "string", "description": "Existing Agent ID used for future generations."},
-        "prompt": {"type": "string", "description": "Content theme/instructions, maximum 20000 characters."},
-        "article_prompt": {"type": "string", "description": "Per-article instruction, maximum 5000 characters; empty string clears it."},
+        "prompt": {"type": "string", "description": "Plan topic (计划主题), not the article prompt; maximum 20000 characters."},
+        "article_prompt": {"type": "string", "description": "Article prompt (文章提示词): extra instruction applied to every generated article, maximum 5000 characters. Empty string explicitly clears it."},
         "article_language": {"type": "string", "enum": ["auto", "zh-hans", "en"], "description": "Article language."},
         "keywords": {"type": "string", "description": "Keyword text; empty string clears it."},
         "word_count_min": {"type": "integer", "description": "Minimum words, zero or greater."},
