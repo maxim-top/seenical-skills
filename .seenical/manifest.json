@@ -2,10 +2,14 @@
   "schema_version": 1,
   "skills": [
     {
-      "skill_id": "seenical-console",
-      "name": "Seenical Console",
-      "description": "Manage Seenical Agents, content plans, sites, previews, and publishing through conversation.",
-      "path": ".",
+      "skill_id": "seenical-api",
+      "name": "知见API",
+      "name_zh": "知见API",
+      "name_en": "Seenical API",
+      "description": "通过 Butler API 管理 Agent、知识库、LOOP、内容预览与站点部署。",
+      "description_zh": "通过 Butler API 管理 Agent、知识库、LOOP、内容预览与站点部署。",
+      "description_en": "Manage Agents, knowledge bases, Loops, content previews, sites, and deployments through Butler APIs.",
+      "path": "skills/seenical-api",
       "tools": [
         { "id": "seenical.messaging.status", "min_version": 1 },
         { "id": "seenical.model.list", "min_version": 1 },
@@ -60,6 +64,30 @@
         "publishing:execute", "plugins:read", "plugins:write",
         "knowledge:read", "knowledge:write", "knowledge:execute"
       ]
+    },
+    {
+      "skill_id": "seenical-console",
+      "name": "知见控制台",
+      "name_zh": "知见控制台",
+      "name_en": "Seenical Console",
+      "description": "按照知见控制台的界面语义完成产品、会话、内容、知识库和站点操作。",
+      "description_zh": "按照知见控制台的界面语义完成产品、会话、内容、知识库和站点操作。",
+      "description_en": "Operate products, conversations, content, knowledge, and sites using Seenical Console semantics.",
+      "path": "skills/seenical-console",
+      "tools": [],
+      "scopes": []
+    },
+    {
+      "skill_id": "seenical-product-onboarding",
+      "name": "新产品引导",
+      "name_zh": "新产品引导",
+      "name_en": "New Product Onboarding",
+      "description": "引导新产品导入资料、建立知识库，并准备 Wiki、QA、News 三条创作管线。",
+      "description_zh": "引导新产品导入资料、建立知识库，并准备 Wiki、QA、News 三条创作管线。",
+      "description_en": "Guide a new product through source ingestion, knowledge setup, and Wiki, QA, and News pipelines.",
+      "path": "skills/seenical-product-onboarding",
+      "tools": [],
+      "scopes": []
     }
   ]
 }

@@ -1,44 +1,51 @@
-# Seenical Console Skill
+# Seenical Skills
 
-This is a single-Skill repository for managing Seenical content workflows. Its
-root `SKILL.md`, `agents/`, and `references/` use the standard Skill layout, so
-compatible Agents can discover and read the Skill without understanding the
-Seenical catalog format. The root `SKILL.md` explicitly routes Codex and other
-Skill readers to the relevant `references/api/*.json` business contract through
-standard progressive disclosure.
+This public multi-Skill repository contains the platform-maintained Seenical
+skills. Each directory under `skills/` is independently installable by its
+GitHub path:
+
+- `skills/seenical-api`: Butler API contracts and the Seenical Tool runtime.
+- `skills/seenical-console`: Seenical Console UI operating guidance.
+- `skills/seenical-product-onboarding`: first-run product setup guidance.
+
+Each Skill uses the standard `SKILL.md`, optional `agents/`, and `references/`
+layout. Compatible Agents can install only the directory they need.
 
 `.seenical/manifest.json` is Seenical-specific publication metadata.
-`.seenical/runtime.json` selects the host-provided Butler API runtime and points
-to `references/api/*.json`, which maps Tool IDs to relative, existing Butler
-APIs. Domains, tokens, headers, tenant data, and Console configuration must
-never be committed here.
+`skills/seenical-api/.seenical/runtime.json` selects the host-provided Butler
+API runtime and points to that Skill's `references/api/*.json` contracts. The
+other two Skills are instruction-only and declare no executable Tools. Domains,
+tokens, headers, tenant data, and Console configuration must never be committed
+here.
 
 ## Repository layout
 
 ```text
-SKILL.md
-agents/openai.yaml
-references/agents.md
-references/plugins.md
-references/knowledge-bases.md
-references/content.md
-references/sites.md
-references/api/agents.json
-references/api/plugins.json
-references/api/knowledge-bases.json
-references/api/content.json
-references/api/sites.json
 .seenical/manifest.json
-.seenical/runtime.json
 .github/workflows/notify.yml
+skills/
+  seenical-api/
+    SKILL.md
+    agents/openai.yaml
+    .seenical/runtime.json
+    references/
+  seenical-console/
+    SKILL.md
+    agents/openai.yaml
+    references/console-operations.md
+  seenical-product-onboarding/
+    SKILL.md
+    agents/openai.yaml
 ```
 
-To update the Skill:
+To update the repository:
 
-1. Edit the root `SKILL.md` instructions or its text references.
-2. Keep the manifest Tool list aligned with `references/api/*.json`. The single
-   descriptor must use `"path": "."`.
-3. Merge the reviewed change to `main`.
+1. Edit only the relevant directory under `skills/`.
+2. Keep each manifest descriptor's `path` aligned with its directory, and keep
+   its `name_zh`, `name_en`, `description_zh`, and `description_en` fields in
+   sync with the public catalog copy.
+3. Keep the `seenical-api` Tool list aligned with its `references/api/*.json`.
+4. Merge the reviewed change to `main`.
 
 `SKILL.md` may link to text resources under `references/` and optional Agent UI
 metadata at `agents/openai.yaml`. Connector validates and stores these files as
@@ -51,6 +58,24 @@ The filename `agents/openai.yaml` is the standard Skill UI metadata location
 used by OpenAI clients such as Codex. It contains only display and invocation
 metadata, does not restrict the Skill to one model provider, and is not read by
 the Seenical Butler API runtime.
+
+Compatibility is intentionally additive:
+
+- Codex reads `SKILL.md`, `agents/openai.yaml`, and the selected
+  `references/api/*.json` file.
+- Claude and WorkBuddy can read `SKILL.md` and `references/`; they may ignore
+  the OpenAI-specific UI metadata.
+- Seenical/Connector reads `.seenical/manifest.json` and
+  `.seenical/runtime.json`, then exposes the same API contracts as tools.
+
+Unknown client-specific metadata can be ignored. Install a Skill with its
+directory URL, for example:
+
+```text
+https://github.com/maxim-top/seenical-skills/tree/main/skills/seenical-api
+```
+
+No product or tenant configuration is stored here.
 
 This version lets Codex discover and understand the same Tool contracts, but it
 does not ship a standalone CLI or MCP server. Seenical Console supplies its
@@ -68,6 +93,7 @@ is configured, the workflow sends repository and commit metadata after Skill
 content is pushed to `main`; the receiver decides how to process the update.
 
 Use **Actions > Notify Skill Update > Run workflow** to retry a failed
-notification or trigger the first import. A successful repository publication
-updates the shared global version. The Skill becomes usable for an App after
-that App binds its Seenical IM user; there is no per-Agent approval or binding.
+notification or trigger the first import. A successful publication updates all
+three shared public Skill versions. `seenical-api` becomes available to
+Seenical Agent conversations after the App binds its Seenical IM user; the
+other Skills remain downloadable guidance and are not injected as Agent Tools.

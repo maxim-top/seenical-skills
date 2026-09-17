@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "skill_id": "seenical-console",
+  "skill_id": "seenical-api",
   "runtime": {
     "type": "butler_api",
     "version": 1,

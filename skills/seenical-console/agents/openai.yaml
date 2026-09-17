@@ -1,0 +1,8 @@
+interface:
+  display_name: "知见控制台"
+  short_description: "Operate Seenical products and content through the Console UI"
+  brand_color: "#5D51CD"
+  default_prompt: "Use $seenical-console to guide me through this task in the Seenical Console UI."
+
+policy:
+  allow_implicit_invocation: true

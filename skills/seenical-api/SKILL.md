@@ -1,15 +1,16 @@
 ---
-name: seenical-console
-description: Manage Seenical Agents, content generation plans, sites, previews, and publishing when a user asks to inspect or change Seenical Console through conversation.
+name: seenical-api
+description: Use the Seenical API to manage Agents, knowledge bases, Loops, content previews, sites, and deployments when a user asks to inspect or change Seenical data through conversation.
 ---
 
-# Seenical Console
+# 知见API
 
-Use the tools exposed by the current Seenical runtime to manage models,
-Agents, plugins, knowledge bases, content plans, sites and publishing. Tool
-schemas exposed by the host are authoritative for execution. When the host
-does not expose named tools but provides a compatible authenticated Butler API
-runtime, use the canonical API catalog below to discover the available calls.
+通过 Butler API 管理知见的 Agent、知识库、LOOP、内容预览、站点与部署。
+Use the tools exposed by the current Seenical runtime to manage models, Agents,
+plugins, knowledge bases, content plans, sites and publishing. Tool schemas
+exposed by the host are authoritative for execution. When the host does not
+expose named tools but provides a compatible authenticated Butler API runtime,
+use the canonical API catalog below to discover the available calls.
 
 ## API catalog
 

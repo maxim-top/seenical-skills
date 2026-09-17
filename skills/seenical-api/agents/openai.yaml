@@ -1,0 +1,8 @@
+interface:
+  display_name: "知见API"
+  short_description: "Manage Seenical Agents, knowledge, Loops, and sites"
+  brand_color: "#5D51CD"
+  default_prompt: "Use $seenical-api to inspect the relevant Seenical resource first, then apply only the changes I request."
+
+policy:
+  allow_implicit_invocation: true

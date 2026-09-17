@@ -1,0 +1,8 @@
+interface:
+  display_name: "新产品引导"
+  short_description: "Set up knowledge and writing pipelines for a new product"
+  brand_color: "#5D51CD"
+  default_prompt: "Use $seenical-product-onboarding to guide me through setting up this new Seenical product."
+
+policy:
+  allow_implicit_invocation: true
