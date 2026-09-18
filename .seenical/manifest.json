@@ -41,6 +41,7 @@
         { "id": "seenical.plan.schedule", "min_version": 1 },
         { "id": "seenical.plan.run", "min_version": 1 },
         { "id": "seenical.plan_runs.list", "min_version": 1 },
+        { "id": "seenical.plan.results", "min_version": 1 },
         { "id": "seenical.plan_run.results", "min_version": 1 },
         { "id": "seenical.plan_run.retry", "min_version": 1 },
         { "id": "seenical.preview.create", "min_version": 1 },

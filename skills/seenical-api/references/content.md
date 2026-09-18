@@ -35,3 +35,8 @@ fail.
 Updating configuration never resumes a paused plan. Run, retry, preview,
 publish, discard, and deploy are
 separate operations. Read the plan/run/preview state before each mutating step.
+
+Use `seenical.plan.results` to browse results across all runs of a plan. Use
+`seenical.plan_run.results` only when a specific `task_run_id` is already known.
+When `has_more` is true, pass the returned `next` value back as `cursor` without
+interpreting or modifying it.

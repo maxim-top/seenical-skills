@@ -110,6 +110,18 @@
       "result_fields": ["list", "total"]
     },
     {
+      "tool_id": "seenical.plan.results", "version": 1,
+      "function_name": "seenical_plan_results", "title": "查看计划生成结果",
+      "description": "List generated article/file results across runs for one plan. Use this when the user asks for a plan's content without naming a specific run.", "risk": "read",
+      "parameters": {"type": "object", "properties": {
+        "task_id": {"$ref": "#/definitions/task_id"},
+        "limit": {"type": "integer", "minimum": 1, "maximum": 100, "description": "Maximum results returned in this page; defaults to 50."},
+        "cursor": {"type": "string", "description": "Opaque next-page cursor returned by the previous call."}
+      }, "required": ["task_id"], "additionalProperties": false},
+      "request": {"method": "GET", "path": "/app/grow_ai/get_task_result_list", "arguments": "query"},
+      "result_fields": ["list", "has_more", "next"]
+    },
+    {
       "tool_id": "seenical.plan_run.results", "version": 1,
       "function_name": "seenical_plan_run_results", "title": "查看生成结果",
       "description": "List generated article/file results for one run.", "risk": "read",
