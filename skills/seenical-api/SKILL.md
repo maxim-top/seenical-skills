@@ -42,12 +42,32 @@ from the selected Tool file. Business APIs live under the standard
 `references/` directory so Codex and other Skill readers can discover the same
 definitions that the Seenical runtime consumes.
 
-Knowing the catalog does not itself grant execution. Call it only when the
-host supplies either the declared `butler_api/v1` runtime or an MCP/tool adapter
-for these Tool IDs. The host must provide its own authenticated base URL,
-session and App context. If no compatible runtime is available, explain that
-the Skill can describe the operation but cannot execute it in the current
-environment; do not ask the user to paste credentials into the conversation.
+Knowing the catalog does not itself grant execution. Use one of these two
+authenticated execution modes:
+
+1. Inside Seenical, use the host-provided `butler_api/v1` runtime. The host
+   supplies its authenticated base URL, Console session and App context.
+2. In Codex, Claude Code or another Agent with an HTTP or shell tool, read
+   `SEENICAL_API_BASE`, `SEENICAL_APP_ID` and `SEENICAL_ADMIN_TOKEN` from the
+   process environment. Require all three values; do not guess them or ask the
+   user to paste the Token into the conversation. Call the relative method and
+   path declared by the selected Tool, send GET arguments as query parameters
+   and other arguments as a JSON body, and include these headers:
+
+   ```text
+   access-token: $SEENICAL_ADMIN_TOKEN
+   app_id: $SEENICAL_APP_ID
+   content-type: application/json
+   ```
+
+   `Authorization: Bearer $SEENICAL_ADMIN_TOKEN` may replace `access-token`.
+   Never put the Token in a URL, command output, log, Tool argument, generated
+   file or repository. Treat Butler responses as successful only when the JSON
+   envelope has `code: 200`; the business result is under `data`.
+
+If neither mode is available, explain which environment variables or host
+runtime are missing and stop before execution. Do not use an endpoint or field
+that is absent from the selected Tool contract.
 
 ## Workflow
 
@@ -88,18 +108,22 @@ environment; do not ask the user to paste credentials into the conversation.
 
 ## Authorization boundaries
 
-The runtime supplies authentication and enforces App, IM user, Agent,
-conversation, original-message, and client capability authorization. Do not
-request, display, persist, or pass
-access tokens, Git credentials, model keys, passwords, or billing credentials
-as tool arguments.
+The Seenical host runtime enforces App, IM user, Agent, conversation,
+original-message, and client capability authorization. Direct HTTP execution
+uses a Seenical API Token that is already limited to its bound App and approved
+API policy. In either mode, do not request, display, or persist access tokens,
+Git credentials, model keys, or billing credentials. Plugin callback
+credentials are the sole exception: only pass a replacement value when the
+user explicitly provides it for `seenical.plugin.update`, never echo it, and
+preserve returned `__MASKED_SENSITIVE_VALUE__` markers unchanged.
 
 Do not use this Skill to change members, roles, account security, billing, or
-credentials. If an expected Seenical tool is unavailable, explain that the
+credentials outside the plugin callback configuration described above. If an
+expected Seenical tool is unavailable, explain that the
 current runtime has not exposed or authorized it; do not substitute an
 unapproved HTTP endpoint. Use Console navigation for file uploads and
-credential configuration because those operations are intentionally absent
-from the JSON API runtime.
+other credential configuration because those operations are intentionally
+absent from the JSON API runtime.
 
 Use `seenical.console.navigate` when the user needs file upload, credential
 configuration, or another task that intentionally requires a Console page.

@@ -77,11 +77,24 @@ https://github.com/maxim-top/seenical-skills/tree/main/skills/seenical-api
 
 No product or tenant configuration is stored here.
 
-This version lets Codex discover and understand the same Tool contracts, but it
-does not ship a standalone CLI or MCP server. Seenical Console supplies its
-authenticated HTTP client to `butler_api/v1`. Direct execution from Codex still
-requires a host-provided Butler runtime or a later MCP/OAuth adapter; API
-knowledge alone does not grant authentication or execution capability.
+This repository does not ship a standalone CLI or MCP server. Seenical Console
+supplies its authenticated HTTP client to `butler_api/v1`. Codex, Claude Code
+and other Agents with an HTTP or shell tool can also execute `seenical-api`
+directly after the user configures these process environment variables outside
+the conversation:
+
+```text
+SEENICAL_API_BASE=https://your-seenical-butler-host
+SEENICAL_APP_ID=your-app-id
+SEENICAL_ADMIN_TOKEN=your-seenical-api-token
+```
+
+The Skill reads the API method, relative path, argument placement and schema
+from `references/api/*.json`, sends the Token through the `access-token` header
+(or a Bearer header), and remains limited by the Token's bound App and Butler
+API policy. Never commit these values or paste the Token into a conversation.
+If the Agent has neither the Seenical host runtime nor the three configured
+environment variables, it can explain the operation but must not attempt it.
 
 ## Update notification
 

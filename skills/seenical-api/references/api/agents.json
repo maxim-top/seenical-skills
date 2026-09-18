@@ -7,8 +7,8 @@
       "description": "Read the current App's intelligent-messaging service status and non-sensitive quota/history settings. Credentials are never returned to the model.",
       "risk": "read",
       "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
-      "request": {"method": "GET", "path": "/app/config/lanying_connector", "arguments": "query"},
-      "result_fields": ["enable", "userId", "service", "messagePerMonthPerUser", "dailyQuotaFusePercent", "historyMsgCountMin", "historyMsgCountMax", "historyMsgSizeMax"]
+      "request": {"method": "GET", "path": "/app/config/lanying_connector/status", "arguments": "query"},
+      "result_fields": ["enable", "user_id", "service", "message_per_month_per_user", "daily_quota_fuse_percent", "history_msg_count_min", "history_msg_count_max", "history_msg_size_max"]
     },
     {
       "tool_id": "seenical.model.list", "version": 1,

@@ -4,7 +4,7 @@
     {
       "tool_id": "seenical.plugin.list", "version": 1,
       "function_name": "seenical_plugin_list", "title": "查看 AI 插件",
-      "description": "List AI plugins in the current App. Use the returned plugin_id rather than guessing an ID.",
+      "description": "List AI plugins in the current App. Use the returned plugin_id rather than guessing an ID. Credential values are returned as __MASKED_SENSITIVE_VALUE__; the marker is not the real value.",
       "risk": "read",
       "parameters": {"type": "object", "properties": {}, "additionalProperties": false},
       "request": {"method": "GET", "path": "/app/list_ai_plugins", "arguments": "query"},
@@ -37,12 +37,16 @@
     {
       "tool_id": "seenical.plugin.update", "version": 1,
       "function_name": "seenical_plugin_update", "title": "修改 AI 插件",
-      "description": "Partially update a plugin name or public HTTPS callback endpoint. Omitted fields remain unchanged; credentials and custom headers are unavailable.",
+      "description": "Partially update plugin configuration. Omitted top-level fields remain unchanged. In headers, params, envs, or auth, submitting a returned __MASKED_SENSITIVE_VALUE__ value preserves the existing value at that exact path; another value replaces it; an empty string clears it. Never invent, display, or repeat a credential.",
       "risk": "destructive",
       "parameters": {"type": "object", "properties": {
         "plugin_id": {"type": "string", "description": "Existing plugin ID."},
         "name": {"type": "string", "description": "Plugin display name; empty string is not valid."},
-        "endpoint": {"type": "string", "description": "Public HTTPS callback base URL; empty string clears it. Private, loopback and local addresses are rejected."}
+        "endpoint": {"type": "string", "description": "Public HTTPS callback base URL; empty string clears it. Private, loopback and local addresses are rejected."},
+        "headers": {"type": "object", "description": "Complete HTTP header configuration. Returned sensitive values use __MASKED_SENSITIVE_VALUE__; submit that exact marker to preserve an existing value. Omitting a key from a submitted headers object removes that key.", "additionalProperties": true},
+        "params": {"type": "object", "description": "Complete callback query parameter configuration with the same masked-value semantics as headers.", "additionalProperties": true},
+        "envs": {"type": "object", "description": "Complete plugin environment-variable configuration. Preserve returned masked values unless the user explicitly supplies a replacement.", "additionalProperties": true},
+        "auth": {"type": "object", "description": "Complete authentication configuration. The type remains visible; usernames and passwords may be masked. Preserve markers unless the user explicitly supplies replacements.", "additionalProperties": true}
       }, "required": ["plugin_id"], "additionalProperties": false},
       "request": {"method": "POST", "path": "/app/configure_ai_plugin", "arguments": "body"},
       "result_fields": ["success", "id", "changed_fields", "resource"]
