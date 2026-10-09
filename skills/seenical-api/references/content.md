@@ -12,6 +12,15 @@ Plan text fields are not interchangeable:
 - `keywords` is a legacy API field name for the article-title pool. It contains
   exactly one complete article title per line; it is not an SEO keyword list.
 - `note` is descriptive or legacy plan text.
+- `reference_document_ids` contains the saved session reference documents, not
+  article titles or `file_list` title files. Omission preserves the saved list;
+  `[]` clears it. Never guess document IDs. Upload, restore and index management
+  belong to Console; do not call its private session-material endpoints.
+
+Session changes do not automatically change a saved Loop. Each run uses its saved
+reference set. If references are not ready or their indexes have been reclaimed,
+ask the user to restore/index the original materials in Console before running
+or retrying. Do not silently clear references to make a run succeed.
 
 When a user asks for an article prompt, use only `article_prompt`. Do not fall
 back to `prompt` or `note`; report an empty `article_prompt` as not configured.
